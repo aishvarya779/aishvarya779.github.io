@@ -157,9 +157,9 @@ const App = () => {
             font: { size: 14, weight: '500' },
             color: '#334155', // slate-700
             callback: function (value: string | number, index: number, ticks: any, context: any) {
-              const label = context.chart.getLabelForValue(value);
+              const label = context?.chart.getLabelForValue(value);
               // Wrap labels longer than 16 characters
-              if (label.length > 16) {
+              if (label?.length > 16) {
                 return label.split(' ').map((word: string, i: number) => i % 2 === 0 ? word : word + '\n');
               }
               return label;
