@@ -114,13 +114,13 @@ const App = () => {
   };
 
   // State for expanded timeline items
-  const [expandedItem, setExpandedItem] = useState(null);
+  const [expandedItem, setExpandedItem] = useState<number | null>(null);
 
   // Refs for Chart.js canvases
   const frontendChartRef = useRef(null);
   const ecosystemChartRef = useRef(null);
-  const frontendChartInstance = useRef(null);
-  const ecosystemChartInstance = useRef(null);
+  const frontendChartInstance = useRef<Chart | null>(null);
+  const ecosystemChartInstance = useRef<Chart | null>(null);
 
   useEffect(() => {
     // Destroy existing chart instances before creating new ones
@@ -138,7 +138,7 @@ const App = () => {
           titleFont: { size: 14, weight: 'bold' },
           bodyFont: { size: 12 },
           callbacks: {
-            label: function (context) {
+            label: function (context: any) {
               return `${context.label}: ${context.raw}% proficiency`;
             }
           }
@@ -156,11 +156,11 @@ const App = () => {
           ticks: {
             font: { size: 14, weight: '500' },
             color: '#334155', // slate-700
-            callback: function (value, index, ticks) {
-              const label = this.getLabelForValue(value);
+            callback: function (value: string | number, index: number, ticks: any, context: any) {
+              const label = context.chart.getLabelForValue(value);
               // Wrap labels longer than 16 characters
               if (label.length > 16) {
-                return label.split(' ').map((word, i) => i % 2 === 0 ? word : word + '\n');
+                return label.split(' ').map((word: string, i: number) => i % 2 === 0 ? word : word + '\n');
               }
               return label;
             }
@@ -184,7 +184,7 @@ const App = () => {
             borderRadius: 4
           }]
         },
-        options: chartBaseOptions
+        options: chartBaseOptions as any
       });
     }
 
@@ -203,7 +203,7 @@ const App = () => {
             borderRadius: 4
           }]
         },
-        options: chartBaseOptions
+        options: chartBaseOptions as any
       });
     }
 
@@ -214,7 +214,7 @@ const App = () => {
     };
   }, []);
 
-  const handleTimelineClick = (index) => {
+  const handleTimelineClick = (index: number | null) => {
     setExpandedItem(expandedItem === index ? null : index);
   };
 
