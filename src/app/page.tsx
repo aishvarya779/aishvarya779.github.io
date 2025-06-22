@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from 'react';
-import Chart from 'chart.js/auto'; // Using auto for simpler imports
-
+import Chart, { ChartOptions } from 'chart.js/auto'; // Using auto for simpler imports
 // Component for the main application
 const App = () => {
   // Resume Data
@@ -127,7 +126,7 @@ const App = () => {
     if (frontendChartInstance.current) frontendChartInstance.current.destroy();
     if (ecosystemChartInstance.current) ecosystemChartInstance.current.destroy();
 
-    const chartBaseOptions = {
+    const chartBaseOptions: ChartOptions<'bar'> | undefined = {
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
@@ -138,7 +137,7 @@ const App = () => {
           titleFont: { size: 14, weight: 'bold' },
           bodyFont: { size: 12 },
           callbacks: {
-            label: function (context: any) {
+            label: function (context) {
               return `${context.label}: ${context.raw}% proficiency`;
             }
           }
@@ -148,16 +147,16 @@ const App = () => {
         x: {
           beginAtZero: true,
           max: 100,
-          grid: { display: false, drawBorder: false },
+          grid: { display: false },
           ticks: { display: false }
         },
         y: {
-          grid: { display: false, drawBorder: false },
+          grid: { display: false },
           ticks: {
-            font: { size: 14, weight: '500' },
+            font: { size: 14, weight: 500 },
             color: '#334155', // slate-700
-            callback: function (value: string | number, index: number, ticks: any, context: any) {
-              const label = context?.chart.getLabelForValue(value);
+            callback: function (value: string | number,) {
+              const label = this.getLabelForValue(Number(value));
               // Wrap labels longer than 16 characters
               if (label?.length > 16) {
                 return label.split(' ').map((word: string, i: number) => i % 2 === 0 ? word : word + '\n');
@@ -184,7 +183,7 @@ const App = () => {
             borderRadius: 4
           }]
         },
-        options: chartBaseOptions as any
+        options: chartBaseOptions
       });
     }
 
@@ -203,7 +202,7 @@ const App = () => {
             borderRadius: 4
           }]
         },
-        options: chartBaseOptions as any
+        options: chartBaseOptions
       });
     }
 
@@ -224,28 +223,34 @@ const App = () => {
 
       {/* Sticky Navigation */}
       <header className="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-50">
-        <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
+        <nav className="container mx-auto px-4 sm:px-6 py-4 flex flex-wrap justify-between items-center">
           <div className="text-xl font-bold text-gray-900">
             {resumeData.name}
           </div>
-          <div className="hidden md:flex space-x-8 text-gray-700">
-            <a href="#summary" className="hover:text-blue-600 transition-colors font-semibold">Summary</a>
-            <a href="#skills" className="hover:text-blue-600 transition-colors font-semibold">Skills</a>
-            <a href="#experience" className="hover:text-blue-600 transition-colors font-semibold">Experience</a>
-            <a href="#projects" className="hover:text-blue-600 transition-colors font-semibold">Projects</a>
-            <a href="#education" className="hover:text-blue-600 transition-colors font-semibold">Education</a>
+          {/* Hamburger for mobile */}
+          <input id="menu-toggle" type="checkbox" className="hidden peer" />
+          <label htmlFor="menu-toggle" className="md:hidden block cursor-pointer">
+            <svg className="h-6 w-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </label>
+          <div className="w-full md:w-auto md:flex space-y-4 md:space-y-0 md:space-x-8 text-gray-700 mt-4 md:mt-0 hidden peer-checked:block md:block bg-white md:bg-transparent rounded-lg md:rounded-none shadow md:shadow-none p-4 md:p-0">
+            <a href="#summary" className="block md:inline hover:text-blue-600 transition-colors font-semibold">Summary</a>
+            <a href="#skills" className="block md:inline hover:text-blue-600 transition-colors font-semibold">Skills</a>
+            <a href="#experience" className="block md:inline hover:text-blue-600 transition-colors font-semibold">Experience</a>
+            <a href="#projects" className="block md:inline hover:text-blue-600 transition-colors font-semibold">Projects</a>
+            <a href="#education" className="block md:inline hover:text-blue-600 transition-colors font-semibold">Education</a>
           </div>
         </nav>
       </header>
 
-      <main className="container mx-auto px-6 py-12">
-
+      <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Hero Section */}
-        <section id="hero" className="text-center py-16">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900">{resumeData.name}</h1>
-          <p className="text-2xl mt-4 text-blue-600 font-extrabold">{resumeData.title}</p>
-          <p className="text-xl text-gray-600 font-medium">{resumeData.specialties}</p>
-          <div className="mt-8 flex justify-center space-x-6 text-2xl">
+        <section id="hero" className="text-center py-10 sm:py-16">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-gray-900">{resumeData.name}</h1>
+          <p className="text-lg sm:text-2xl mt-4 text-blue-600 font-extrabold">{resumeData.title}</p>
+          <p className="text-base sm:text-xl text-gray-600 font-medium">{resumeData.specialties}</p>
+          <div className="mt-8 flex justify-center space-x-6 text-xl sm:text-2xl">
             <a href={`mailto:${resumeData.contact.email}`} className="text-blue-600 hover:text-blue-700 transition-colors transform hover:scale-110" title="Email">
               <span>&#9993;</span>
             </a>
@@ -259,28 +264,28 @@ const App = () => {
         </section>
 
         {/* Professional Summary Section */}
-        <section id="summary" className="py-12 scroll-mt-20">
-          <h2 className="text-3xl font-bold text-center border-b-4 border-blue-500 pb-2 mb-8 inline-block text-gray-800">Professional Summary</h2>
-          <div className="bg-white p-8 rounded-xl shadow-lg max-w-4xl mx-auto border border-gray-100">
-            <p className="text-lg leading-relaxed text-gray-700">
+        <section id="summary" className="py-8 sm:py-12 scroll-mt-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center border-b-4 border-blue-500 pb-2 mb-6 sm:mb-8 inline-block text-gray-800">Professional Summary</h2>
+          <div className="bg-white p-4 sm:p-8 rounded-xl shadow-lg max-w-4xl mx-auto border border-gray-100">
+            <p className="text-base sm:text-lg leading-relaxed text-gray-700">
               {resumeData.summary}
             </p>
           </div>
         </section>
 
         {/* Skills Section */}
-        <section id="skills" className="py-12 scroll-mt-20">
-          <h2 className="text-3xl font-bold text-center border-b-4 border-blue-500 pb-2 mb-8 inline-block text-gray-800">Technical Skills</h2>
+        <section id="skills" className="py-8 sm:py-12 scroll-mt-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center border-b-4 border-blue-500 pb-2 mb-6 sm:mb-8 inline-block text-gray-800">Technical Skills</h2>
           <div className="space-y-8">
-            <div className="bg-white p-6 rounded-xl shadow-lg max-w-4xl mx-auto border border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">Frontend Core</h3>
-              <div className="chart-container">
+            <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg max-w-4xl mx-auto border border-gray-100">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-center">Frontend Core</h3>
+              <div className="chart-container w-full h-48 sm:h-64">
                 <canvas ref={frontendChartRef}></canvas>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-xl shadow-lg max-w-4xl mx-auto border border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">Development Ecosystem</h3>
-              <div className="chart-container">
+            <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg max-w-4xl mx-auto border border-gray-100">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-center">Development Ecosystem</h3>
+              <div className="chart-container w-full h-48 sm:h-64">
                 <canvas ref={ecosystemChartRef}></canvas>
               </div>
             </div>
@@ -288,19 +293,25 @@ const App = () => {
         </section>
 
         {/* Work Experience Section */}
-        <section id="experience" className="py-12 scroll-mt-20">
-          <h2 className="text-3xl font-bold text-center border-b-4 border-blue-500 pb-2 mb-8 inline-block text-gray-800">Work Experience</h2>
-          <div className="timeline-container">
-            <div className="timeline-line"></div>
+        <section id="experience" className="py-8 sm:py-12 scroll-mt-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center border-b-4 border-blue-500 pb-2 mb-6 sm:mb-8 inline-block text-gray-800">Work Experience</h2>
+          <div className="timeline-container relative flex flex-col md:block">
+            <div className="timeline-line absolute left-1/2 md:left-1/2 top-0 h-full w-1 bg-blue-100 z-0 hidden md:block"></div>
             {resumeData.experience.map((job, index) => (
-              <div key={index} className={`timeline-item ${index % 2 === 0 ? 'md:self-start' : 'md:self-end'} ${expandedItem === index ? 'active' : ''} relative`}>
-                <div className="timeline-dot"></div>
-                <div className={`timeline-content-wrapper max-w-md ${index % 2 === 0 ? 'md:mr-auto' : 'md:ml-auto'}`} onClick={() => handleTimelineClick(index)}>
-                  <p className="text-sm text-gray-500">{job.period}</p>
-                  <h3 className="text-lg font-bold text-gray-800 mt-1">{job.role}</h3>
-                  <p className="text-md font-semibold text-blue-600">{job.company}</p>
+              <div
+                key={index}
+                className={`timeline-item w-full md:w-1/2 ${index % 2 === 0 ? 'md:self-start md:pr-8' : 'md:self-end md:pl-8'} ${expandedItem === index ? 'active' : ''} relative mb-8`}
+              >
+                <div className="timeline-dot absolute left-1/2 md:left-auto md:-ml-2 top-2 w-4 h-4 bg-blue-500 rounded-full z-10"></div>
+                <div
+                  className={`timeline-content-wrapper max-w-md bg-white p-4 sm:p-6 rounded-xl shadow border border-gray-100 cursor-pointer`}
+                  onClick={() => handleTimelineClick(index)}
+                >
+                  <p className="text-xs sm:text-sm text-gray-500">{job.period}</p>
+                  <h3 className="text-base sm:text-lg font-bold text-gray-800 mt-1">{job.role}</h3>
+                  <p className="text-sm sm:text-md font-semibold text-blue-600">{job.company}</p>
                   <div className="timeline-details text-left">
-                    <ul className="list-disc list-inside text-gray-700 mt-4 space-y-2 text-sm">
+                    <ul className="list-disc list-inside text-gray-700 mt-4 space-y-2 text-xs sm:text-sm">
                       {job.points.map((point, pIdx) => (
                         <li key={pIdx}>{point}</li>
                       ))}
@@ -313,18 +324,18 @@ const App = () => {
         </section>
 
         {/* Projects Section */}
-        <section id="projects" className="py-12 scroll-mt-20">
-          <h2 className="text-3xl font-bold text-center border-b-4 border-blue-500 pb-2 mb-8 inline-block text-gray-800">Projects</h2>
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <section id="projects" className="py-8 sm:py-12 scroll-mt-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center border-b-4 border-blue-500 pb-2 mb-6 sm:mb-8 inline-block text-gray-800">Projects</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
             {resumeData.projects.map((project, index) => (
-              <div key={index} className="card border border-gray-100">
-                <h3 className="text-xl font-bold text-gray-800">{project.name}</h3>
+              <div key={index} className="card border border-gray-100 bg-white p-4 sm:p-6 rounded-xl shadow">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800">{project.name}</h3>
                 <p className="mt-2 text-gray-700">{project.description}</p>
-                <p className="mt-4 text-sm font-medium text-gray-500">Technologies: {project.technologies}</p>
-                <ul className="list-disc list-inside text-gray-700 mt-2 text-sm">
+                <p className="mt-4 text-xs sm:text-sm font-medium text-gray-500">Technologies: {project.technologies}</p>
+                <ul className="list-disc list-inside text-gray-700 mt-2 text-xs sm:text-sm">
                   <li><strong>Contributions:</strong> {project.contributions}</li>
                 </ul>
-                <div className="mt-4 flex space-x-4">
+                <div className="mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                   <a href={project.liveDemo} className="text-blue-600 hover:text-blue-700 font-semibold transform hover:scale-105" target="_blank" rel="noopener noreferrer">Live Demo &rarr;</a>
                   <a href={project.github} className="text-blue-600 hover:text-blue-700 font-semibold transform hover:scale-105" target="_blank" rel="noopener noreferrer">GitHub &rarr;</a>
                 </div>
@@ -334,19 +345,18 @@ const App = () => {
         </section>
 
         {/* Education Section */}
-        <section id="education" className="py-12 scroll-mt-20">
-          <h2 className="text-3xl font-bold text-center border-b-4 border-blue-500 pb-2 mb-8 inline-block text-gray-800">Education</h2>
-          <div className="card max-w-xl mx-auto text-center border border-gray-100">
+        <section id="education" className="py-8 sm:py-12 scroll-mt-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center border-b-4 border-blue-500 pb-2 mb-6 sm:mb-8 inline-block text-gray-800">Education</h2>
+          <div className="card max-w-xl mx-auto text-center border border-gray-100 bg-white p-4 sm:p-6 rounded-xl shadow">
             {resumeData.education.map((edu, index) => (
               <div key={index} className={index < resumeData.education.length - 1 ? 'mb-4' : ''}>
-                <h3 className="text-xl font-bold text-gray-800">{edu.degree}</h3>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800">{edu.degree}</h3>
                 <p className="text-gray-700">{edu.institution} - {edu.date}</p>
-                <p className="text-sm text-gray-500">Score: {edu.score}</p>
+                <p className="text-xs sm:text-sm text-gray-500">Score: {edu.score}</p>
               </div>
             ))}
           </div>
         </section>
-
       </main>
 
       {/* Footer */}
