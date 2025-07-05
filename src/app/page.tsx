@@ -28,7 +28,7 @@ const App = () => {
       },
       categorized: {
         "Frontend Frameworks": ["Angular", "ReactJS", "NextJS"],
-        "Languages": ["JavaScript", "TypeScript", "HTML5", "CSS3"],
+        "Languages": ["JavaScript", "TypeScript", "HTML5", "CSS3", "WebSockets"],
         "State Management": ["NGRX", "RXJS"],
         "UI Libraries/Styling": ["Angular Material", "Flexbox", "Bootstrap", "ShadCN", "Tailwind CSS"],
         "Testing Frameworks": ["Jasmine", "Karma", "Jest"],
